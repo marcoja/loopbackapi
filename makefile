@@ -8,4 +8,4 @@ stop:
 	@docker stop server-test
 clean:	stop
 	@docker rm -v -f server-test
-	@docker rmi -f img_mongo
+	#@docker rmi -f img_mongo
