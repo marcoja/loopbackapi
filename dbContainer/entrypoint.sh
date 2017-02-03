@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+echo "running ..."
+
+
 if [ "${1:0:1}" = '-' ]; then
 	set -- mongod "$@"
 fi
