@@ -2,5 +2,15 @@
   "db": {
     "name": "db",
     "connector": "memory"
+  },
+  "mongoDs": {
+    "host": "127.0.0.1",
+    "port": 49000,
+    "url": "",
+    "database": "appdb",
+    "password": "lala1234",
+    "name": "mongoDs",
+    "user": "appAdmin",
+    "connector": "mongodb"
   }
 }
