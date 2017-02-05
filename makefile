@@ -13,3 +13,5 @@ stop:
 	@docker stop server-test
 clean:	stop
 	@docker rm -v -f server-test
+shell:
+	@docker exec -it server-test /bin/bash
