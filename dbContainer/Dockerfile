@@ -6,7 +6,7 @@ RUN mkdir /var/workdir
 RUN chown -R mongodb:mongodb /var/workdir
 
 RUN apt-get update
-RUN apt-get install -y vim
+RUN apt-get install -y vim file 
 
 #create development log file
 RUN touch /var/workdir/test.log
