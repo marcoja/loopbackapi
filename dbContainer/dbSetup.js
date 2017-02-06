@@ -1,3 +1,4 @@
+//Creates server wide administrative user;
 use admin
 var documentUser = {
   user: "dbAdmin",
@@ -6,6 +7,9 @@ var documentUser = {
 };
 db.createUser(documentUser);
 
+
+//Create a new database for the application
+//Create a new database wise adm inistrative user
 use appdb;
 db.createCollection("test")
 //Create a database administrative user for the application
