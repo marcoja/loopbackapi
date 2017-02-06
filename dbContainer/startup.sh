@@ -1,10 +1,7 @@
 #!/bin/bash -x
-echo 'hello script at: $(date)' >> /var/workdir/test.log
+echo "hello, I'm startup.sh at: $(date)" >> /var/workdir/test.log
 
-echo $(ps -fe | grep -i mongod) >> /var/workdir/test.log
-echo $@ >> /var/workdir/test.log
-
-CMD=$(ps -fe | grep -i "mongod" | wc -l)
-if [ $CMD -ne 0 ]; then
-  echo "good!";
-fi
+#Setting default database server configuration file.
+mongo < /var/workdir/dbSetup.js
+echo "auth = true" >> /data/dbconfig/mongodb.conf
+echo "logpath = /var/log/mongodb/mongod.log" >> /data/dbconfig/mongodb.conf

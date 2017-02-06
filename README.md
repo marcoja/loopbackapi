@@ -2,7 +2,6 @@
 Testbed for "hands on" training on loopback
 
 
-
 Installation:
 - git clone https://github.com/marcoja/loopbackapi.git
 - cd loopbackapi
@@ -10,5 +9,3 @@ Installation:
 - make run 
 - make setup
 - npm install 
-
-
