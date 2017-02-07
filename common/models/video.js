@@ -3,12 +3,14 @@
 var chalk = require('chalk');
 var fs    = require('fs');
 
+//This function will log any GET request to the custom application log file.
+//this function shoulf be converted into a separate node module.
 function makeLog(url, method, endpoint) {
   var file = 'appLogs/appLog.log';
   var date  = new Date();
   var output = `request - ${method} - ${endpoint} - ${url} - ${date}`;
   console.log(chalk.cyan(output));
-
+  //Writes log to file
   fs.appendFile(file, `${output} \n`, function(err) {
     if (err) { console.log(chalk.red(err)); }
   });

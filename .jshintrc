@@ -92,6 +92,7 @@
 	"prototypejs": false,    // Enable globals exposed by Prototype JavaScript framework.
 	"rhino": false,    // Enable globals available when your code is running inside of the Rhino runtime environment.
 	"wsh": false,    // Enable globals available when your code is running as a script for the Windows Script Host.
+	"esversion": 6,
 
 	// == JSLint Legacy ===================================================
 	//
