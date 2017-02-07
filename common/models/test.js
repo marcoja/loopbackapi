@@ -11,7 +11,7 @@ module.exports = function(Test) {
   Test.disableRemoteMethodByName('replaceOrCreate', true);
   Test.disableRemoteMethodByName('exists', true);
   Test.disableRemoteMethodByName('count', true);
-  Test.disableRemoteMethodByName('find', true);
+  //Test.disableRemoteMethodByName('find', false);
   Test.disableRemoteMethodByName('findById', true);
   Test.disableRemoteMethodByName('findOne', true);
   Test.disableRemoteMethodByName('findOrCreate', true);

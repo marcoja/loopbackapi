@@ -10,7 +10,7 @@ module.exports = function(app, cb) {
    */
 
   app.models.Video.observe('access', function(ctx, next) {
-    var output = chalk.yellow('Access operation hook for /Videos');
+    var output = chalk.yellow('Hook: Access operation hook for /Videos');
     console.log(output);
     next();
   });
