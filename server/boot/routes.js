@@ -8,6 +8,8 @@ module.exports = function(app) {
    * http://docs.strongloop.com/display/public/LB/Working+with+LoopBack+objects
    * for more info.
    */
+
+
   var router = app.loopback.Router();
   router.get('/customEndpoint', function(req, res) {
     res.send('Hello, I am a custom endpoint!');
