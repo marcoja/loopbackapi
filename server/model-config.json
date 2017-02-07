@@ -35,5 +35,9 @@
   "Video": {
     "dataSource": "mongoDs",
     "public": true
+  },
+  "Test": {
+    "dataSource": "mongoDs",
+    "public": true
   }
 }
