@@ -11,7 +11,7 @@ function makeLog(url, method, endpoint) {
   var file = 'appLogs/appLog.log';
   var date  = new Date();
   var output = `request - ${method} - ${endpoint} - ${url} - ${date}`;
-  console.log(chalk.cyan(output));
+  console.log(chalk.yellow(output));
   //Writes log to file
   fs.appendFile(file, `${output} \n`, function(err) {
     if (err) { console.log(chalk.red(err)); }
@@ -20,16 +20,17 @@ function makeLog(url, method, endpoint) {
 
 module.exports = function(Video) {
   var endpointName = '/Videos';
-  Video.search = function(name, itemsPerPage, cb) {
-    lastFM.searchById(name, itemsPerPage, cb);
-    //cb(null, {"hola": "dsfsdf"});
+  Video.search = function(name, itemsPerPage, page, cb) {
+    lastFM.searchById(name, itemsPerPage, page, cb);
   };
+
   //Method metadata definition
   Video.remoteMethod('search', {
     http: {path: '/search', verb: 'get'},
     accepts: [
       {arg: 'name', type: 'string'},
       {arg: 'itemsPerPage', type: 'number'},
+      {arg: 'page', type: 'number'},
     ],
     returns: {arg: 'results', type: 'json'},
   });
@@ -40,9 +41,10 @@ module.exports = function(Video) {
     makeLog(context.req.url, context.req.method, endpointName);
     next();
   });
+
   //Remote hook acting on endpoint method search
   Video.beforeRemote('search', function(context, user, next) {
-    console.log(chalk.green('remote method: search'));
+    //console.log(chalk.green('remote method: search'));
     makeLog(context.req.url, context.req.method, endpointName);
     next();
   });
