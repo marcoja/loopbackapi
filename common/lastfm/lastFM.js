@@ -17,6 +17,8 @@ LastFM.prototype.searchById = function(name, limit, page, cb) {
   var error, answer;
   var options       = this.buildOptions(name, limit, page);
   var buildResponse = this.buildResponse;
+
+  //Excute GET request
   request(options, function(err, response, body) {
     //check for error
     if (error) {
@@ -61,20 +63,18 @@ LastFM.prototype.buildResponse = function(body) {
   var parsedSongs = [];
   var rawBody = JSON.parse(body);
   var songsList = rawBody.results.trackmatches.track;
-  //console.log(rawBody.results);
-  //console.log(rawBody.results['opensearch:totalResults']);
-  //console.log(rawBody.results.trackmatches);
   //console.log(rawBody.results.trackmatches.track[0]);
-  //console.log('----');
   songsList.forEach(function(song, index) {
-    var tmp = {
-      name: song.name,
-      author: song.artist,
-      mbid: song.mbid,
-    };
-    parsedSongs.push(tmp);
+    if (song.mbid !== '') {
+      var tmp = {
+        name: song.name,
+        author: song.artist,
+        mbid: song.mbid,
+        img: song.image[2]['#text'],
+      };
+      parsedSongs.push(tmp);
+    }
   });
-
   return parsedSongs;
 };//buildResponse
 

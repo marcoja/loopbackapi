@@ -21,7 +21,12 @@ function makeLog(url, method, endpoint) {
 module.exports = function(Video) {
   var endpointName = '/Videos';
   Video.search = function(name, itemsPerPage, page, cb) {
-    lastFM.searchById(name, itemsPerPage, page, cb);
+    if (!name) {
+      cb({statusCode: 400, statusMessage: 'No song name provided.'}, null);
+      return;
+    } else {
+      lastFM.searchById(name, itemsPerPage, page, cb);
+    }
   };
 
   //Method metadata definition
