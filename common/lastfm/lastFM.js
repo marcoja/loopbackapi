@@ -10,15 +10,14 @@ var buildOptions = function(baseConfig, query, cb) {
   //console.log('method: buildOptions');
   //validate base config
   if (baseConfig.uri === '' || baseConfig.key === '') {
-    var error = 'bad baseConfig';
-    cb(error, null);
-    return;
+    var error = new Error('bad baseConfig');
+    return cb(error);
   }
   //Build query string object for http request
   var qs = {
     method: 'track.search',
     format: 'json',
-    api_key: baseConfig.key,
+    'api_key': baseConfig.key,
     limit: query.items,
     page: query.page,
     track: query.name,
@@ -57,10 +56,15 @@ var buildResponse = function(rawResponse, cb) {
 //page  - number  - Optional  - Default: 1
 var parseQuery = function(options, cb) {
   //console.log('method: parseQuery');
+
   if (!options.name) {
-    cb('Missing track name, unable to perform search.', null);
-    return;
+    var err = new Error();
+    err.name    = 'Bad name';
+    err.status  = '400';
+    err.message = 'Missing track name, Unable to perform search.';
+    return cb(err);
   }
+
   var newOpts = {};
   newOpts.name  = options.name;
   newOpts.items = !options.items ? 10 : options.items;
@@ -74,24 +78,15 @@ var searchByID = function(query, cb) {
   var baseConfig  = require('./configLastFM');
   buildOptions(baseConfig, query, function(error, parsedConfig) {
     //check for errors
-    if (error) {
-      cb(error, null);
-      return;
-    }
+    if (error) { return cb(error); }
     //handle success
     request(parsedConfig, function(error, request, response) {
       //check for errors
-      if (error) {
-        console.log(error);
-        cb(error, null);
-        return;
-      }
+      if (error) { return cb(error, null); }
+      //handle success
       buildResponse(response, function(error, response) {
         //check for errors
-        if (error) {
-          cb(error, null);
-          return;
-        }
+        if (error) { return cb(error, null); }
         //handle success
         cb(null, response);
       });
