@@ -14,9 +14,13 @@
       "type": "string",
       "required": true
     },
-    "year": {
-      "type": "number",
+    "mbid": {
+      "type": "string",
       "required": true
+    },
+    "image":{
+      "type": "string",
+      "required": false
     }
   },
   "validations": [],

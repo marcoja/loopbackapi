@@ -3,79 +3,105 @@
 //Required modules
 var request = require('request');
 var chalk   = require('chalk');
-var config  = require('./configLastFM');
 
-//Module for interacting with the last fm api
-var LastFM = function() {
-  this.moduleName = 'LastFM';
-};
-
-//This method will request matadata information for a given song
-//from the lastfm API
-LastFM.prototype.searchById = function(name, limit, page, cb) {
-  //console.log(chalk.green('I am searchById'));
-  var error, answer;
-  var options       = this.buildOptions(name, limit, page);
-  var buildResponse = this.buildResponse;
-
-  //Excute GET request
-  request(options, function(err, response, body) {
-    //check for error
-    if (error) {
-      console.log('error');
-      cb(error, null);
-    }
-    //check for response code
-    if (response.statusCode !== 200) {
-      console.log('bad status code');
-      error = {code: response.statusCode, msg: response.statusMessage};
-      cb(error, null);
-    }
-    //handling request
-    //console.log(response.req);
-    var answer = buildResponse(body);
-    cb(null, answer);
-  });
-};//searchById
-
-//Helper method to parse and build the request options object.
-LastFM.prototype.buildOptions = function(name, limit, page) {
-  //console.log(chalk.cyan('I am buildOptions'));
+//This method will build a final configuration object fot the http request
+//based on a given base configuration file.
+var buildOptions = function(baseConfig, query, cb) {
+  //console.log('method: buildOptions');
+  //validate base config
+  if (baseConfig.uri === '' || baseConfig.key === '') {
+    var error = 'bad baseConfig';
+    cb(error, null);
+    return;
+  }
+  //Build query string object for http request
   var qs = {
-    'method': 'track.search',
-    'format': 'json',
-    'api_key': config.key,
-    'limit': limit,
-    'page': page,
-    'track': name,
+    method: 'track.search',
+    format: 'json',
+    api_key: baseConfig.key,
+    limit: query.items,
+    page: query.page,
+    track: query.name,
   };
-
-  var parsedOptions = {
-    uri: config.uri,
-    qs: qs,
-  };
-  return parsedOptions;
+  //Build options objects for http request
+  var parsedConfig = {uri: baseConfig.uri, qs: qs};
+  cb(null, parsedConfig);
 };//buildOptions
 
-//Helper method for parsing and building the custom response object.
-LastFM.prototype.buildResponse = function(body) {
-  //console.log(chalk.cyan('I am buildResponse'));
-  var parsedSongs = [];
-  var rawBody = JSON.parse(body);
-  var songsList = rawBody.results.trackmatches.track;
-  //console.log(rawBody.results.trackmatches.track[0]);
-  songsList.forEach(function(song, index) {
-    if (song.mbid !== '') {
+//This method will parse and format the final response based on the
+//http request results
+var buildResponse = function(rawResponse, cb) {
+  //console.log('method: buildResponse');
+  var parsedResponse = [];
+  var tmpResponse = JSON.parse(rawResponse);
+  var trackList = tmpResponse.results.trackmatches.track;
+  //console.log(trackList[0]);
+  trackList.forEach(function(track, index) {
+    if (track.mbid) {
       var tmp = {
-        name: song.name,
-        author: song.artist,
-        mbid: song.mbid,
-        img: song.image[2]['#text'],
+        name: track.name,
+        author: track.artist,
+        mbid: track.mbid,
+        image: track.image[1]['#text'],
       };
-      parsedSongs.push(tmp);
+      parsedResponse.push(tmp);
     }
   });
-  return parsedSongs;
+  cb(null, parsedResponse);
 };//buildResponse
 
-module.exports = new LastFM();
+//This methos will parse the intial option for the request
+//initial options:
+//name  - string  - Required
+//items - number  - Optional  - Default: 10
+//page  - number  - Optional  - Default: 1
+var parseQuery = function(options, cb) {
+  //console.log('method: parseQuery');
+  if (!options.name) {
+    cb('Missing track name, unable to perform search.', null);
+    return;
+  }
+  var newOpts = {};
+  newOpts.name  = options.name;
+  newOpts.items = !options.items ? 10 : options.items;
+  newOpts.page  = !options.page ? 1 : options.page;
+  cb(null, newOpts);
+};//parseQuery
+
+//This method will handle the process of "search songs by id"
+var searchByID = function(query, cb) {
+  //console.log('method: searchById');
+  var baseConfig  = require('./configLastFM');
+  buildOptions(baseConfig, query, function(error, parsedConfig) {
+    //check for errors
+    if (error) {
+      cb(error, null);
+      return;
+    }
+    //handle success
+    request(parsedConfig, function(error, request, response) {
+      //check for errors
+      if (error) {
+        console.log(error);
+        cb(error, null);
+        return;
+      }
+      buildResponse(response, function(error, response) {
+        //check for errors
+        if (error) {
+          cb(error, null);
+          return;
+        }
+        //handle success
+        cb(null, response);
+      });
+    });//request
+  });//buildOptions
+};//searchByID
+//Build object with public methods
+var LastFM = {
+  query: parseQuery,
+  search: searchByID,
+};
+//Make methods available
+module.exports = LastFM;

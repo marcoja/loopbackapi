@@ -2,7 +2,6 @@
 
 var chalk = require('chalk');
 var fs    = require('fs');
-var request = require('request');
 var lastFM  = require('../lastfm/lastFM');
 
 //This function will log any GET request to the custom application log file.
@@ -20,14 +19,29 @@ function makeLog(url, method, endpoint) {
 
 module.exports = function(Video) {
   var endpointName = '/Videos';
-  Video.search = function(name, itemsPerPage, page, cb) {
-    if (!name) {
-      cb({statusCode: 400, statusMessage: 'No song name provided.'}, null);
-      return;
-    } else {
-      lastFM.searchById(name, itemsPerPage, page, cb);
-    }
-  };
+  Video.search = function(name, items, page, cb) {
+    var query = {name: name, items: items, page: page};
+    lastFM.query(query, function(error, goodQuery) {
+      //check for error
+      if (error) {
+        var finalError = {statusCode: 400, statusMessage: error};
+        cb(finalError, null);
+        return;
+      }
+      //Handle success
+      lastFM.search(goodQuery, function(error, response) {
+        //check for error
+        if (error) {
+          var finalError = {statusCode: 400, statusMessage: error};
+          cb(finalError, null);
+          return;
+        }
+        //handle success
+        cb(null, response);
+        return;
+      });//search
+    });//query
+  };//video
 
   //Method metadata definition
   Video.remoteMethod('search', {
